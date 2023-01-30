@@ -12,7 +12,8 @@ public struct SwedishPNR {
     }
 }
 
-extension SwedishPNR {
+
+public struct Parser {
     enum ParseError: Error {
         case length(Int)
         case checksum(Int, Int)
@@ -21,30 +22,32 @@ extension SwedishPNR {
         case referenceDate
     }
 
-    public struct Parser {
-        var swedishCalendar: Calendar {
-            return makeSwedishCalendar()
-        }
-
-        public func parse(input: any StringProtocol, relative reference: Date = Date()) throws -> SwedishPNR {
-            guard reference >= SwedishPNR.earliestPossibleReferenceDate else {
-                throw ParseError.referenceDate
-            }
-            
-            return SwedishPNR(input: String(input), normalized: String(input), birthDateComponents: DateComponents(), birthDate: Date(), age: 0)
-        }
+    var swedishCalendar: Calendar {
+        return makeSwedishCalendar()
     }
+
+    var earliestPossibleReferenceDate: Date {
+        let components = DateComponents(year: 1947, month: 1, day: 1)
+        return swedishCalendar.date(from: components)!
+    }
+
+    public func parse(input: any StringProtocol, relative reference: Date = Date()) throws -> SwedishPNR {
+        guard reference >= earliestPossibleReferenceDate else {
+            throw ParseError.referenceDate
+        }
+        
+        return SwedishPNR(input: String(input), normalized: String(input), birthDateComponents: DateComponents(), birthDate: Date(), age: 0)
+    }
+}
+
+
+extension SwedishPNR {
 
     static public func parse(input: any StringProtocol, relative reference: Date = Date()) throws -> SwedishPNR {
         return try Parser().parse(input: input, relative: reference)
     }
-
-    static var earliestPossibleReferenceDate: Date {
-        let cal = makeSwedishCalendar()
-        let components = DateComponents(year: 1947, month: 1, day: 1)
-        return cal.date(from: components)!
-    }
 }
+
 
 fileprivate func makeSwedishCalendar() -> Calendar {
     var cal = Calendar(identifier: .gregorian)

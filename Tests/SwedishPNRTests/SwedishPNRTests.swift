@@ -25,84 +25,60 @@ final class SwedishPNRTests: XCTestCase {
 
     func testValidIdentificationNumbers() throws {
         struct test {
+            let name: String
             let input: String
             let normalized: String
             let birthDateComponents: DateComponents
         }
 
         let fixture: [test] = [
-            test(input: "20171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10))
+            test(name: "13 dgt",           input: "20171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "12 dgt",           input: "201712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "11 dgt",           input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "10 dgt",           input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+
+            test(name: "trimmed",          input:  " 171210-0005 ",normalized: "20171270-0005", birthDateComponents: self.components(2017, 12, 10)),
+
+            test(name: "100+",             input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+
+            test(name: "sam.13",           input: "20171270-0002", normalized: "20171270-0002", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "sam.11",           input:   "171270-0002", normalized: "20171270-0002", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "sam.11 100+",      input:   "171270+0002", normalized: "19171270-0002", birthDateComponents: self.components(1917, 12, 10)),
+
+            test(name: "deduce this cent", input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "deduce this cent", input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "deduce this cent", input:   "160601-0005", normalized: "20160601-0005", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "deduce this cent", input:   "1606010005",  normalized: "20171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+
+            test(name: "deduce last cent", input:   "171218-0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
+            test(name: "deduce last cent", input:   "1712180007",  normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
+            test(name: "deduce last cent", input:   "180601-0003", normalized: "19180601-0003", birthDateComponents: self.components(1918,  6,  1)),
+            test(name: "deduce last cent", input:   "1806010003",  normalized: "19180601-0003", birthDateComponents: self.components(1918,  6,  1)),
+
+            test(name: "deduce cent 100+", input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "deduce cent 100+", input:   "160601+0005", normalized: "19160601-0005", birthDateComponents: self.components(1916,  6,  1)),
+            test(name: "deduce cent 100+", input:   "171218+0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
+            test(name: "deduce cent 100+", input:   "180601+0003", normalized: "18180601-0003", birthDateComponents: self.components(1818,  6,  1)),
         ]
-    }
-
-    func testValid13DigitIdentificationNumber() throws {
-        let pnr = try SwedishPNR.parse(input: "20171210-0005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "20171210-0005")
-        XCTAssertEqual(pnr.normalized, "20171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-    }
-
-    func testValid12DigitIdentificationnumber() throws {
-        let pnr = try SwedishPNR.parse(input: "201712100005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "201712100005")
-        XCTAssertEqual(pnr.normalized, "20171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-    }
-
-    func testValid11DigitIdentificationnumber() throws {
-        let pnr = try SwedishPNR.parse(input: "1712100005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "1712100005")
-        XCTAssertEqual(pnr.normalized, "20171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-    }
-
-    func testValid10DigitIdentificationnumber() throws {
-        let pnr = try SwedishPNR.parse(input: "171210-0005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171210-0005")
-        XCTAssertEqual(pnr.normalized, "20171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-    }
-
-    func testValid11DigitCentennialIdentificationnumber() throws {
-        let pnr = try SwedishPNR.parse(input: "171210+0005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171210+0005")
-        XCTAssertEqual(pnr.normalized, "19171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 12, 10))
-    }
-
-    func testValid13DigitSammordningnummer() throws {
-        let pnr = try SwedishPNR.parse(input: "20171270-0002", relative: self.now!)
-        XCTAssertEqual(pnr.input, "20171270-0002")
-        XCTAssertEqual(pnr.normalized, "20171270-0002")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-    }
-
-    func testValid11DigitSammordningnummer() throws {
-        let pnr = try SwedishPNR.parse(input: "171270-0002", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171270-0002")
-        XCTAssertEqual(pnr.normalized, "20171270-0002")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-    }
-
-    func testValid11DigitCentennialSammordningnummer() throws {
-        let pnr = try SwedishPNR.parse(input: "171270+0002", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171270+0002")
-        XCTAssertEqual(pnr.normalized, "19171270-0002")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 12, 10))
-    }
-
-    func testValidIdentificationnumberIsTrimmed() throws {
-        let pnr = try SwedishPNR.parse(input: " 171210-0005 ", relative: self.now!)
-        XCTAssertEqual(pnr.input, " 171210-0005 ")
-        XCTAssertEqual(pnr.normalized, "20171270-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
+        
+        for t in fixture {
+            do {
+                let pnr = try SwedishPNR.parse(input: t.input, relative: self.now!)
+                XCTAssertEqual(pnr.input, t.input, "\(t.name) input")
+                XCTAssertEqual(pnr.normalized, t.normalized, "\(t.name) normalized")
+                XCTAssertEqual(pnr.birthDateComponents, t.birthDateComponents, "\(t.name) bday comps")
+            } catch {
+                XCTFail("\(t.name) unexpected error: \(error)")
+                continue
+            }
+        }
     }
 
     func testInitiallyTrimmed() throws {
         do {
             _ = try SwedishPNR.parse(input: "  123456789 ", relative: self.now!)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.length(let was) {
+        } catch Parser.ParseError.length(let was) {
             XCTAssertEqual(was, 9)
         } catch {
             XCTFail("unexpected error \(error)")
@@ -113,7 +89,7 @@ final class SwedishPNRTests: XCTestCase {
         do {
             _ = try SwedishPNR.parse(input: "123456789", relative: self.now!)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.length(let was) {
+        } catch Parser.ParseError.length(let was) {
             XCTAssertEqual(was, 9)
         } catch {
             XCTFail("unexpected error \(error)")
@@ -122,7 +98,7 @@ final class SwedishPNRTests: XCTestCase {
         do {
             _ = try SwedishPNR.parse(input: "123456789abcde", relative: self.now!)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.length(let was) {
+        } catch Parser.ParseError.length(let was) {
             XCTAssertEqual(was, 14)
         } catch {
             XCTFail("unexpected error \(error)")
@@ -133,7 +109,7 @@ final class SwedishPNRTests: XCTestCase {
         do {
             _ = try SwedishPNR.parse(input: "20171210-0003", relative: self.now!)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.checksum(let expected, let was) {
+        } catch Parser.ParseError.checksum(let expected, let was) {
             XCTAssertEqual(was, 3)
             XCTAssertEqual(expected, 5)
         } catch {
@@ -141,8 +117,9 @@ final class SwedishPNRTests: XCTestCase {
         }
     }
 
-    func testNonNumeric10DigitNumber() throws {
+    func testIllegalFormat() throws {
         let illegals = [
+            // 10-digit
             "x712149876",
             "1x12149876",
             "17x2149876",
@@ -153,21 +130,8 @@ final class SwedishPNRTests: XCTestCase {
             "1712149x76",
             "17121498x6",
             "171214987x",
-        ]
-
-        for illegal in illegals {
-            do {
-                _ = try SwedishPNR.parse(input: illegal, relative: self.now!)
-                XCTFail("unexpected success")
-            } catch SwedishPNR.ParseError.format {
-            } catch {
-                XCTFail("unexpected error \(error)")
-            }
-        }
-    }
-
-    func testNonNumeric11DigitNumber() throws {
-        let illegals = [
+ 
+            // 11-digit
             "x71214-9876",
             "1x1214-9876",
             "17x214-9876",
@@ -178,21 +142,8 @@ final class SwedishPNRTests: XCTestCase {
             "171214-9x76",
             "171214-98x6",
             "171214-987x",
-        ]
 
-        for illegal in illegals {
-            do {
-                _ = try SwedishPNR.parse(input: illegal, relative: self.now!)
-                XCTFail("unexpected success")
-            } catch SwedishPNR.ParseError.format {
-            } catch {
-                XCTFail("unexpected error \(error)")
-            }
-        }
-    }
-
-    func testNonNumeric12DigitNumber() throws {
-        let illegals = [
+            // 12-digit
             "x01712149876",
             "2x1712149876",
             "20x712149876",
@@ -205,21 +156,8 @@ final class SwedishPNRTests: XCTestCase {
             "201712149x76",
             "2017121498x6",
             "20171214987x",
-        ]
 
-        for illegal in illegals {
-            do {
-                _ = try SwedishPNR.parse(input: illegal, relative: self.now!)
-                XCTFail("unexpected success")
-            } catch SwedishPNR.ParseError.format {
-            } catch {
-                XCTFail("unexpected error \(error)")
-            }
-        }
-    }
-
-    func testNonNumeric13DigitNumber() throws {
-        let illegals = [
+            // 13-digit
             "x0171214-9876",
             "2x171214-9876",
             "20x71214-9876",
@@ -232,59 +170,31 @@ final class SwedishPNRTests: XCTestCase {
             "20171214-9x76",
             "20171214-98x6",
             "20171214-987x",
+
+            // 11-digit separator
+            "171214/9876",
+
+            // 13-digit separator
+            "20171214/9876",
+            "20171214+9876",
         ]
 
         for illegal in illegals {
             do {
                 _ = try SwedishPNR.parse(input: illegal, relative: self.now!)
-                XCTFail("unexpected success")
-            } catch SwedishPNR.ParseError.format {
+                XCTFail("\(illegal) expected format error, had success")
+            } catch Parser.ParseError.format {
             } catch {
-                XCTFail("unexpected error \(error)")
+                XCTFail("\(illegal) expected format error, got \(error)")
             }
         }
     }
 
-    func testIllegalSeparatorIn11DigitNumber() throws {
-        do {
-            _ = try SwedishPNR.parse(input: "171214/9876", relative: self.now!)
-            XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.format {
-        } catch {
-            XCTFail("unexpected error \(error)")
-        }
-    }
-
-    func testIllegalSeparatorIn13DigitNumber() throws {
-        do {
-            _ = try SwedishPNR.parse(input: "20171214+9876", relative: self.now!)
-            XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.format {
-        } catch {
-            XCTFail("unexpected error \(error)")
-        }
-
-        do {
-            _ = try SwedishPNR.parse(input: "20171214/9876", relative: self.now!)
-            XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.format {
-        } catch {
-            XCTFail("unexpected error \(error)")
-        }
-    }
-
-    func testFullLengthIdentificationnumberWithNonExistentDate() throws {
-        do {
-            _ = try SwedishPNR.parse(input: "20170229-1236", relative: self.now!)
-            XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.date {
-        } catch {
-            XCTFail("unexpected error \(error)")
-        }
-    }
-
-    func testInvalidSamordningsnummer() throws {
+    func testIllegalDate() throws {
         let illegals = [
+            "20170229-1236",
+
+            // samordningsnummer
             "20170260-1236",
             "20170293-1237",
             "20170289-1233",
@@ -293,84 +203,12 @@ final class SwedishPNRTests: XCTestCase {
         for illegal in illegals {
             do {
                 _ = try SwedishPNR.parse(input: illegal, relative: self.now!)
-                XCTFail("unexpected success")
-            } catch SwedishPNR.ParseError.date {
+                XCTFail("\(illegal) expected date error, had success")
+            } catch Parser.ParseError.date {
             } catch {
-                XCTFail("unexpected error \(error)")
+                XCTFail("\(illegal) expected date error, got \(error)")
             }
         }
-    }
-
-    func testDeduceYearInSameCentury() throws {
-        var pnr = try SwedishPNR.parse(input: "171210-0005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171210-0005")
-        XCTAssertEqual(pnr.normalized, "20171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-
-        pnr = try SwedishPNR.parse(input: "1712100005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "1712100005")
-        XCTAssertEqual(pnr.normalized, "20171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2017, 12, 10))
-
-
-        pnr = try SwedishPNR.parse(input: "160601-0005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "160601-0005")
-        XCTAssertEqual(pnr.normalized, "20160601-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2016, 6, 1))
-
-        pnr = try SwedishPNR.parse(input: "1606010005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "1606010005")
-        XCTAssertEqual(pnr.normalized, "20160601-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(2016, 6, 1))
-    }
-
-    func testDeduceYearInLastCentury() throws {
-        var pnr = try SwedishPNR.parse(input: "171218-0007", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171218-0007")
-        XCTAssertEqual(pnr.normalized, "19171218-0007")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 12, 18))
-
-        pnr = try SwedishPNR.parse(input: "1712180007", relative: self.now!)
-        XCTAssertEqual(pnr.input, "1712180007")
-        XCTAssertEqual(pnr.normalized, "19171218-0007")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 12, 18))
-
-
-        pnr = try SwedishPNR.parse(input: "180601-0003", relative: self.now!)
-        XCTAssertEqual(pnr.input, "180601-0003")
-        XCTAssertEqual(pnr.normalized, "19180601-0003")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 6, 1))
-
-        pnr = try SwedishPNR.parse(input: "1806010003", relative: self.now!)
-        XCTAssertEqual(pnr.input, "1806010003")
-        XCTAssertEqual(pnr.normalized, "19180601-0003")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 6, 1))
-    }
-
-    func testDeduceYearOfCentennial() throws {
-        var pnr = try SwedishPNR.parse(input: "171210+0005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171210+0005")
-        XCTAssertEqual(pnr.normalized, "19171210-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 12, 10))
-
-        pnr = try SwedishPNR.parse(input: "160601+0005", relative: self.now!)
-        XCTAssertEqual(pnr.input, "160601+0005")
-        XCTAssertEqual(pnr.normalized, "19160601-0005")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1916, 6, 1))
-    }
-
-    func testDeduceYearOfCentennialIncludesThisYearInSearch() throws {
-        let pnr = try SwedishPNR.parse(input: "171218+0007", relative: self.now!)
-        XCTAssertEqual(pnr.input, "171218+0007")
-        XCTAssertEqual(pnr.normalized, "19171218-0007")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1917, 12, 18))
-    }
-
-    func testDeduceYearOfCentennialInNextToLastCentury() throws {
-        let pnr = try SwedishPNR.parse(input: "180601+0003", relative: self.now!)
-        XCTAssertEqual(pnr.input, "180601+0003")
-        XCTAssertEqual(pnr.normalized, "18180601-0003")
-        XCTAssertEqual(pnr.birthDateComponents, self.components(1818, 6, 1))
     }
 
     func testDeducedDateInThisCenturyDoesNotExit() throws {
@@ -379,7 +217,7 @@ final class SwedishPNRTests: XCTestCase {
         do {
             _ = try SwedishPNR.parse(input: "130229-0000", relative: ref)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.date {
+        } catch Parser.ParseError.date {
         } catch {
             XCTFail("unexpected error \(error)")
         }
@@ -393,7 +231,7 @@ final class SwedishPNRTests: XCTestCase {
         do {
             _ = try SwedishPNR.parse(input: "000229-0005", relative: ref)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.date {
+        } catch Parser.ParseError.date {
         } catch {
             XCTFail("unexpected error \(error)")
         }
@@ -405,7 +243,7 @@ final class SwedishPNRTests: XCTestCase {
         do {
             _ = try SwedishPNR.parse(input: "010229-0004", relative: ref)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.date {
+        } catch Parser.ParseError.date {
         } catch {
             XCTFail("unexpected error \(error)")
         }
@@ -453,7 +291,7 @@ final class SwedishPNRTests: XCTestCase {
         do {
             _ = try SwedishPNR.parse(input: "171210-0005", relative: ref)
             XCTFail("unexpected success")
-        } catch SwedishPNR.ParseError.referenceDate {
+        } catch Parser.ParseError.referenceDate {
         } catch {
             XCTFail("unexpected error \(error)")
         }
