@@ -35,8 +35,14 @@ public struct Parser {
         guard reference >= earliestPossibleReferenceDate else {
             throw ParseError.referenceDate
         }
+
+        let trimmed = input.trimmingCharacters(in: CharacterSet.whitespaces)
         
-        return SwedishPNR(input: String(input), normalized: String(input), birthDateComponents: DateComponents(), birthDate: Date(), age: 0)
+        guard trimmed.count >= 10 && trimmed.count <= 13 else {
+            throw ParseError.length(trimmed.count)
+        }
+
+        return SwedishPNR(input: String(input), normalized: trimmed, birthDateComponents: DateComponents(), birthDate: Date(), age: 0)
     }
 }
 
