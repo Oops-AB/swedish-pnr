@@ -23,6 +23,18 @@ final class SwedishPNRTests: XCTestCase {
         return DateComponents(year: year, month: month, day: day)
     }
 
+    func testValidIdentificationNumbers() throws {
+        struct test {
+            let input: String
+            let normalized: String
+            let birthDateComponents: DateComponents
+        }
+
+        let fixture: [test] = [
+            test(input: "20171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10))
+        ]
+    }
+
     func testValid13DigitIdentificationNumber() throws {
         let pnr = try SwedishPNR.parse(input: "20171210-0005", relative: self.now!)
         XCTAssertEqual(pnr.input, "20171210-0005")
