@@ -37,18 +37,18 @@ final class SwedishPNRTests: XCTestCase {
             test(name: "11 dgt",           input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
             test(name: "10 dgt",           input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
 
-            test(name: "trimmed",          input:  " 171210-0005 ",normalized: "20171270-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "trimmed",          input:  " 171210-0005 ",normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
 
             test(name: "100+",             input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
 
             test(name: "sam.13",           input: "20171270-0002", normalized: "20171270-0002", birthDateComponents: self.components(2017, 12, 10)),
-            test(name: "sam.11",           input:   "171270-0002", normalized: "20171270-0002", birthDateComponents: self.components(2017, 12, 10)),
-            test(name: "sam.11 100+",      input:   "171270+0002", normalized: "19171270-0002", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "sam.11",           input:   "171270-0002", normalized: "20171210-0002", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "sam.11 100+",      input:   "171270+0002", normalized: "19171210-0002", birthDateComponents: self.components(1917, 12, 10)),
 
-            test(name: "deduce this cent", input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(1917, 12, 10)),
-            test(name: "deduce this cent", input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(1917, 12, 10)),
-            test(name: "deduce this cent", input:   "160601-0005", normalized: "20160601-0005", birthDateComponents: self.components(1917, 12, 10)),
-            test(name: "deduce this cent", input:   "1606010005",  normalized: "20171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "deduce this cent 1", input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "deduce this cent 2", input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "deduce this cent 3", input:   "160601-0005", normalized: "20160601-0005", birthDateComponents: self.components(2016,  6,  1)),
+            test(name: "deduce this cent 4", input:   "1606010005",  normalized: "20160601-0005", birthDateComponents: self.components(2016,  6,  1)),
 
             test(name: "deduce last cent", input:   "171218-0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
             test(name: "deduce last cent", input:   "1712180007",  normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
@@ -265,8 +265,8 @@ final class SwedishPNRTests: XCTestCase {
     func testIncludeReferenceDayInSearch() throws {
         var referenceTime = formatterForSweden!.date(from: "2017-12-08")!
 
-        var pnr = try SwedishPNR.parse(input: "000229-0005", relative: referenceTime)
-        XCTAssertEqual(pnr.normalized, "000229-0005")
+        var pnr = try SwedishPNR.parse(input: "171208-0009", relative: referenceTime)
+        XCTAssertEqual(pnr.normalized, "20171208-0009")
         
         let formatterWithTime = makeFormatterForSwedishDatesWithFormat(format: "yyyy-MM-dd HH:mm")
         referenceTime = formatterWithTime.date(from: "2017-12-08 23:55")!
