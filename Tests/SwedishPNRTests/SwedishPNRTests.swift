@@ -32,33 +32,33 @@ final class SwedishPNRTests: XCTestCase {
         }
 
         let fixture: [test] = [
-            test(name: "13 dgt",           input: "20171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
-            test(name: "12 dgt",           input: "201712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
-            test(name: "11 dgt",           input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
-            test(name: "10 dgt",           input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "13 dgt",             input: "20171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "12 dgt",             input: "201712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "11 dgt",             input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "10 dgt",             input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
 
-            test(name: "trimmed",          input:  " 171210-0005 ",normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "trimmed",            input:  " 171210-0005 ",normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
 
-            test(name: "100+",             input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "100+",               input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
 
-            test(name: "sam.13",           input: "20171270-0002", normalized: "20171270-0002", birthDateComponents: self.components(2017, 12, 10)),
-            test(name: "sam.11",           input:   "171270-0002", normalized: "20171210-0002", birthDateComponents: self.components(2017, 12, 10)),
-            test(name: "sam.11 100+",      input:   "171270+0002", normalized: "19171210-0002", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "sam.13",             input: "20171270-0002", normalized: "20171270-0002", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "sam.11",             input:   "171270-0002", normalized: "20171210-0002", birthDateComponents: self.components(2017, 12, 10)),
+            test(name: "sam.11 100+",        input:   "171270+0002", normalized: "19171210-0002", birthDateComponents: self.components(1917, 12, 10)),
 
             test(name: "deduce this cent 1", input:   "171210-0005", normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
             test(name: "deduce this cent 2", input:   "1712100005",  normalized: "20171210-0005", birthDateComponents: self.components(2017, 12, 10)),
             test(name: "deduce this cent 3", input:   "160601-0005", normalized: "20160601-0005", birthDateComponents: self.components(2016,  6,  1)),
             test(name: "deduce this cent 4", input:   "1606010005",  normalized: "20160601-0005", birthDateComponents: self.components(2016,  6,  1)),
 
-            test(name: "deduce last cent", input:   "171218-0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
-            test(name: "deduce last cent", input:   "1712180007",  normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
-            test(name: "deduce last cent", input:   "180601-0003", normalized: "19180601-0003", birthDateComponents: self.components(1918,  6,  1)),
-            test(name: "deduce last cent", input:   "1806010003",  normalized: "19180601-0003", birthDateComponents: self.components(1918,  6,  1)),
+            test(name: "deduce last cent",   input:   "171218-0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
+            test(name: "deduce last cent",   input:   "1712180007",  normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
+            test(name: "deduce last cent",   input:   "180601-0003", normalized: "19180601-0003", birthDateComponents: self.components(1918,  6,  1)),
+            test(name: "deduce last cent",   input:   "1806010003",  normalized: "19180601-0003", birthDateComponents: self.components(1918,  6,  1)),
 
-            test(name: "deduce cent 100+", input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
-            test(name: "deduce cent 100+", input:   "160601+0005", normalized: "19160601-0005", birthDateComponents: self.components(1916,  6,  1)),
-            test(name: "deduce cent 100+", input:   "171218+0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
-            test(name: "deduce cent 100+", input:   "180601+0003", normalized: "18180601-0003", birthDateComponents: self.components(1818,  6,  1)),
+            test(name: "deduce cent 100+",   input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
+            test(name: "deduce cent 100+",   input:   "160601+0005", normalized: "19160601-0005", birthDateComponents: self.components(1916,  6,  1)),
+            test(name: "deduce cent 100+",   input:   "171218+0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
+            test(name: "deduce cent 100+",   input:   "180601+0003", normalized: "18180601-0003", birthDateComponents: self.components(1818,  6,  1)),
         ]
         
         for t in fixture {
@@ -211,7 +211,7 @@ final class SwedishPNRTests: XCTestCase {
         }
     }
 
-    func testDeducedDateInThisCenturyDoesNotExit() throws {
+    func testThrowsWhenDeducedDateInThisCenturyDoesNotExit() throws {
         let ref = formatterForSweden!.date(from: "2017-12-08")!
 
         do {
@@ -223,7 +223,7 @@ final class SwedishPNRTests: XCTestCase {
         }
     }
 
-    func testDeducedDateInLastCenturyDoesNotExit() throws {
+    func testThrowsWhenDeducedDateInLastCenturyDoesNotExit() throws {
         // 2000-02-29 does exist while 1900-02-29 does not.
         // So, if it's 2000-02-01 and we want to deduce the birth year from "000229" our first candidate will be '20000229' which does exist, but because it's in the future we'll look in the past century instead. We form '1900-02-29' and conclude that the candidate date doesn't exist (because 1900 is not a leap year).
         let ref = formatterForSweden!.date(from: "2000-02-01")!
@@ -237,7 +237,7 @@ final class SwedishPNRTests: XCTestCase {
         }
     }
 
-    func testDeducedDateDoesNotExistInThisOrLastCentury() throws {
+    func testThrowsWhenDeducedDateDoesNotExistInThisOrLastCentury() throws {
         let ref = formatterForSweden!.date(from: "2001-02-01")!
 
         do {
@@ -249,7 +249,7 @@ final class SwedishPNRTests: XCTestCase {
         }
     }
 
-    func testDeducedDateInThisCenturyDoesNotExist() throws {
+    func testThrowsWhenDeducedDateInThisCenturyDoesNotExist() throws {
         // 2400-02-29 does exist while 2500-02-29 does not.
         // If it's 2500-02-28 and we want to deduce '000229', then the candidate '2500-02-29' doesn't exist
         // (and if it would have existed it had been in the future),

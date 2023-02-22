@@ -37,7 +37,7 @@ public struct Parser {
         }
 
         let trimmed = input.trimmingCharacters(in: CharacterSet.whitespaces)
-        
+
         guard trimmed.count >= 10 && trimmed.count <= 13 else {
             throw ParseError.length(trimmed.count)
         }
@@ -52,7 +52,7 @@ public struct Parser {
             birthDateComponents = try deduceCenturyFromBirthDate(birthDateComponents, reference, isCentennial)
         }
 
-        var normalized: String
+        let normalized: String
 
         switch trimmed.count {
         case 10: fallthrough
@@ -76,19 +76,18 @@ public struct Parser {
     private func deduceCenturyFromBirthDate(_ birthDate: DateComponents, _ reference: Date, _ isCentennial: Bool) throws -> DateComponents {
         var presentTime = reference
         var century = swedishCalendar.component(.year, from: presentTime) / 100
-        
+
         if isCentennial {
             century -= 1
             presentTime = swedishCalendar.date(byAdding: .year, value: -100, to: presentTime)!
         }
-        
+
         var candidate = DateComponents(
             year: 100*century + birthDate.year!,
             month: birthDate.month,
             day: birthDate.day! > 60 ? birthDate.day! - 60 : birthDate.day
         )
 
-        // guard for swedishCalendar.date(from: candidate) instead
         if (!candidate.isValidDate(in: swedishCalendar) || swedishCalendar.compare(swedishCalendar.date(from: candidate)!, to: presentTime, toGranularity: isCentennial ? .year : .day) == .orderedDescending) {
             century -= 1
             candidate.year = 100*century + birthDate.year!
@@ -107,11 +106,11 @@ public struct Parser {
         if let d = candidate.day, d > 60 {
             candidate.day = d - 60
         }
-        
+
         if !candidate.isValidDate(in: swedishCalendar) {
             throw ParseError.date
         }
-        
+
         return candidate
     }
 
@@ -121,20 +120,20 @@ public struct Parser {
         /// yyyymmddnnnn
         /// yyyymmdd-nnnn
 
-        let y,m,d,n : Int
+        let year,month,day,number : Int
 
         var cursor = string.startIndex
 
         if string.count == 10 || string.count == 11 {
             let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 2)
             if count != 2 { throw ParseError.format }
-            y = Int(res!)
+            year = Int(res!)
             cursor = string.index(cursor, offsetBy: 2)
 
         } else if string.count == 12 || string.count == 13 { 
             let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 4)
             if count != 4 { throw ParseError.format }
-            y = Int(res!)
+            year = Int(res!)
             cursor = string.index(cursor, offsetBy: 4)
 
         } else {
@@ -144,13 +143,13 @@ public struct Parser {
         do {
             let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 2)
             if count != 2 { throw ParseError.format }
-            m = Int(res!)
+            month = Int(res!)
             cursor = string.index(cursor, offsetBy: 2)
         }
         do {
             let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 2)
             if count != 2 { throw ParseError.format }
-            d = Int(res!)
+            day = Int(res!)
             cursor = string.index(cursor, offsetBy: 2)
         }
 
@@ -167,21 +166,21 @@ public struct Parser {
         do {
             let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 4)
             if count != 4 { throw ParseError.format }
-            n = Int(res!)
+            number = Int(res!)
             cursor = string.index(cursor, offsetBy: 2)
         }
 
-        return (DateComponents(year: y, month: m, day: d), n)
+        return (DateComponents(year: year, month: month, day: day), number)
     }
 
     /// This method assumes `pnr` is 10 to 13 digits long, including a possible (single!) separator.
     fileprivate func validateChecksum<S: StringProtocol>(_ pnr: S) throws {
         var cursor = pnr.startIndex
-        
+
         if pnr.count > 11 {
             cursor = pnr.index(cursor, offsetBy: 2)
         }
-        
+
         var sum: UInt8 = 0
         var r: UInt8 = 0
 
@@ -191,7 +190,7 @@ public struct Parser {
         r = 1 * (pnr[cursor].asciiValue! - 48); sum += r>9 ? 1+r-10 : r; cursor = pnr.index(after: cursor)
         r = 2 * (pnr[cursor].asciiValue! - 48); sum += r>9 ? 1+r-10 : r; cursor = pnr.index(after: cursor)
         r = 1 * (pnr[cursor].asciiValue! - 48); sum += r>9 ? 1+r-10 : r; cursor = pnr.index(after: cursor)
-        
+
         if pnr.count == 11 || pnr.count == 13 {
             cursor = pnr.index(after: cursor)
         }
@@ -200,16 +199,17 @@ public struct Parser {
         r = 1 * (pnr[cursor].asciiValue! - 48); sum += r>9 ? 1+r-10 : r; cursor = pnr.index(after: cursor)
         r = 2 * (pnr[cursor].asciiValue! - 48); sum += r>9 ? 1+r-10 : r; cursor = pnr.index(after: cursor)
 
-        var final = 10 - (sum % 10)
-        final = final == 10 ? 0 : final
+        var expectedChecksum = 10 - (sum % 10)
+        if expectedChecksum == 10 { expectedChecksum = 0 }
 
-        let check = "\(final)"
-        
-        if check.last! != pnr.last! {
-            throw ParseError.checksum(Int(final), Int(pnr.last!.asciiValue!) - 48)
+        let actualChecksum = pnr.last!.asciiValue! - 48
+
+        if expectedChecksum != actualChecksum {
+            throw ParseError.checksum(Int(expectedChecksum), Int(actualChecksum))
         }
     }
 }
+
 
 fileprivate func scanUInt<S: StringProtocol>(s: S, maxdigits: Int) -> (count: Int, result: UInt?) {
     var result: UInt = 0
@@ -230,8 +230,8 @@ fileprivate func scanUInt<S: StringProtocol>(s: S, maxdigits: Int) -> (count: In
     return (count: ndigits, result: result)
 }
 
-extension SwedishPNR {
 
+extension SwedishPNR {
     static public func parse(input: any StringProtocol, relative reference: Date = Date()) throws -> SwedishPNR {
         return try Parser().parse(input: input, relative: reference)
     }
