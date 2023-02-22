@@ -7,14 +7,8 @@ public struct SwedishPNR {
     public let birthDate: Date
     public let age: Int
 
-    public func age(at reference: Date?) -> Int {
-        let ref = reference ?? Date()
-        
-        if ref.compare(birthDate) == .orderedAscending {
-            return 0
-        }
-
-        return makeSwedishCalendar().dateComponents([.year], from: birthDate, to: ref).year!
+    public func age(at reference: Date = Date()) -> Int {
+        return calculateAge(for: birthDate, at: reference, in: makeSwedishCalendar())
     }
 }
 
@@ -76,17 +70,7 @@ public struct Parser {
             normalized: normalized,
             birthDateComponents: birthDateComponents,
             birthDate: bday,
-            age: age(for: bday, at: reference))
-    }
-
-    private func age(for birthDate: Date, at reference: Date?) -> Int {
-        let ref = reference ?? Date()
-        
-        if ref.compare(birthDate) == .orderedAscending {
-            return 0
-        }
-
-        return makeSwedishCalendar().dateComponents([.year], from: birthDate, to: ref).year!
+            age: calculateAge(for: bday, at: reference, in: swedishCalendar))
     }
 
     private func deduceCenturyFromBirthDate(_ birthDate: DateComponents, _ reference: Date, _ isCentennial: Bool) throws -> DateComponents {
@@ -251,6 +235,15 @@ extension SwedishPNR {
     static public func parse(input: any StringProtocol, relative reference: Date = Date()) throws -> SwedishPNR {
         return try Parser().parse(input: input, relative: reference)
     }
+}
+
+
+fileprivate func calculateAge(for birthDate: Date, at reference: Date = Date(), in calendar: Calendar) -> Int {
+    if reference.compare(birthDate) == .orderedAscending {
+        return 0
+    }
+
+    return calendar.dateComponents([.year], from: birthDate, to: reference).year!
 }
 
 
