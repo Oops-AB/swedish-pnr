@@ -125,15 +125,11 @@ public struct Parser {
         var cursor = string.startIndex
 
         if string.count == 10 || string.count == 11 {
-            let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 2)
-            if count != 2 { throw ParseError.format }
-            year = Int(res!)
+            year = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
             cursor = string.index(cursor, offsetBy: 2)
 
         } else if string.count == 12 || string.count == 13 { 
-            let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 4)
-            if count != 4 { throw ParseError.format }
-            year = Int(res!)
+            year = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 4)
             cursor = string.index(cursor, offsetBy: 4)
 
         } else {
@@ -141,15 +137,11 @@ public struct Parser {
         }
 
         do {
-            let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 2)
-            if count != 2 { throw ParseError.format }
-            month = Int(res!)
+            month = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
             cursor = string.index(cursor, offsetBy: 2)
         }
         do {
-            let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 2)
-            if count != 2 { throw ParseError.format }
-            day = Int(res!)
+            day = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
             cursor = string.index(cursor, offsetBy: 2)
         }
 
@@ -164,10 +156,8 @@ public struct Parser {
         }
 
         do {
-            let (count, res) = scanUInt(s: string[cursor..<string.endIndex], maxdigits: 4)
-            if count != 4 { throw ParseError.format }
-            number = Int(res!)
-            cursor = string.index(cursor, offsetBy: 2)
+            number = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 4)
+            cursor = string.index(cursor, offsetBy: 4)
         }
 
         return (DateComponents(year: year, month: month, day: day), number)
@@ -210,6 +200,16 @@ public struct Parser {
     }
 }
 
+
+fileprivate func scanPositiveInt<S: StringProtocol>(s: S, exactelyNumDigits: Int) throws -> Int {
+    let (count, res) = scanUInt(s: s, maxdigits: exactelyNumDigits)
+
+    guard count == exactelyNumDigits, let res = res else {
+        throw Parser.ParseError.format
+    }
+
+    return Int(res)
+}
 
 fileprivate func scanUInt<S: StringProtocol>(s: S, maxdigits: Int) -> (count: Int, result: UInt?) {
     var result: UInt = 0
