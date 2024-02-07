@@ -163,6 +163,36 @@ public struct Parser {
         return (DateComponents(year: year, month: month, day: day), number)
     }
 
+    private func extractONR(from string: String) throws -> (Int, Int, Int) {
+        /// 202100-5448
+        /// fxdxxx-nnnn
+
+        var cursor = string.startIndex
+
+        let f = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 1)
+        cursor = string.index(cursor, offsetBy: 1)
+
+        let _ = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 1)
+        cursor = string.index(cursor, offsetBy: 1)
+
+        let d = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 1)
+        cursor = string.index(cursor, offsetBy: 1)
+
+        let _ = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 3)
+        cursor = string.index(cursor, offsetBy: 3)
+
+        if string.count == 11 {
+            let c = string[cursor]
+            guard c == Character("-") else { throw ParseError.format }
+            cursor = string.index(cursor, offsetBy: 1)
+        }
+
+        let n = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 4)
+        cursor = string.index(cursor, offsetBy: 4)
+
+        return (f, d, n)
+    }
+
     /// This method assumes `pnr` is 10 to 13 digits long, including a possible (single!) separator.
     fileprivate func validateChecksum<S: StringProtocol>(_ pnr: S) throws {
         var cursor = pnr.startIndex
@@ -230,6 +260,20 @@ fileprivate func scanUInt<S: StringProtocol>(s: S, maxdigits: Int) -> (count: In
     return (count: ndigits, result: result)
 }
 
+extension Parser {
+    public func parseONR(input: any StringProtocol) throws -> SwedishONR {
+        let trimmed = input.trimmingCharacters(in: CharacterSet.whitespaces)
+
+        guard trimmed.count == 10 || trimmed.count == 11 else {
+            throw ParseError.length(trimmed.count)
+        }
+
+        let (f, d, n) = try extractONR(from: trimmed)
+        try validateChecksum(trimmed)
+
+        return SwedishONR(input: trimmed, normalized: trimmed)
+    }
+}
 
 extension SwedishPNR {
     static public func parse(input: any StringProtocol, relative reference: Date = Date()) throws -> SwedishPNR {
