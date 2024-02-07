@@ -125,11 +125,11 @@ public struct Parser {
         var cursor = string.startIndex
 
         if string.count == 10 || string.count == 11 {
-            year = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
+            year = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
             cursor = string.index(cursor, offsetBy: 2)
 
         } else if string.count == 12 || string.count == 13 { 
-            year = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 4)
+            year = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 4)
             cursor = string.index(cursor, offsetBy: 4)
 
         } else {
@@ -137,11 +137,11 @@ public struct Parser {
         }
 
         do {
-            month = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
+            month = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
             cursor = string.index(cursor, offsetBy: 2)
         }
         do {
-            day = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
+            day = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 2)
             cursor = string.index(cursor, offsetBy: 2)
         }
 
@@ -156,7 +156,7 @@ public struct Parser {
         }
 
         do {
-            number = try scanPositiveInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 4)
+            number = try scanNonNegativeInt(s: string[cursor..<string.endIndex], exactelyNumDigits: 4)
             cursor = string.index(cursor, offsetBy: 4)
         }
 
@@ -201,7 +201,7 @@ public struct Parser {
 }
 
 
-fileprivate func scanPositiveInt<S: StringProtocol>(s: S, exactelyNumDigits: Int) throws -> Int {
+fileprivate func scanNonNegativeInt<S: StringProtocol>(s: S, exactelyNumDigits: Int) throws -> Int {
     let (count, res) = scanUInt(s: s, maxdigits: exactelyNumDigits)
 
     guard count == exactelyNumDigits, let res = res else {
