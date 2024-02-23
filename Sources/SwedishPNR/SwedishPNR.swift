@@ -283,7 +283,7 @@ extension SwedishPNR {
 
 
 fileprivate func calculateAge(for birthDate: Date, at reference: Date = Date(), in calendar: Calendar) -> Int {
-    if reference.compare(birthDate) == .orderedAscending {
+    guard reference.isAfter(birthDate) else {
         return 0
     }
 
@@ -296,4 +296,22 @@ fileprivate func makeSwedishCalendar() -> Calendar {
     cal.locale = Locale(identifier: "sv_SE")
     cal.timeZone = TimeZone(identifier: "Europe/Stockholm")!
     return cal
+}
+
+internal extension Date {
+    func isAfter(_ date: Date) -> Bool {
+        self.compare(date) == .orderedDescending
+    }
+
+    func isBefore(_ date: Date) -> Bool {
+        self.compare(date) == .orderedAscending
+    }
+
+    func isOnOrAfter(_ date: Date) -> Bool {
+        !isBefore(date)
+    }
+    
+    func isOnOrBefore(_ date: Date) -> Bool {
+        !isAfter(date)
+    }
 }
