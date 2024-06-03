@@ -54,9 +54,9 @@ public struct Parser {
         let normalized: String
 
         switch trimmed.count {
-        case 10: fallthrough
-        case 11: fallthrough
-        case 12:
+        case 10,
+             11,
+             12:
             normalized = String(format: "%04d%02d%02d-%04d", birthDateComponents.year!, birthDateComponents.month!, birthDateComponents.day!, birthNumber)
         default:
             normalized = trimmed
