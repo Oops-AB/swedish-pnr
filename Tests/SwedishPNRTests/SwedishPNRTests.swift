@@ -321,12 +321,12 @@ final class SwedishPNRTests: XCTestCase {
 
     func testAge() throws {
         var ref = formatterForSweden!.date(from: "2022-01-01")!
-        XCTAssertEqual(try SwedishPNR.parse(input: "000101-0008", relative: ref).age, 22)
+        XCTAssertEqual(try SwedishPNR.parse(input: "000101-0008", relative: ref).age(at: ref), 22)
 
         ref = formatterForSweden!.date(from: "2022-06-12")!
-        XCTAssertEqual(try SwedishPNR.parse(input: "20220611-0005", relative: ref).age, 0, "born yesterday")
-        XCTAssertEqual(try SwedishPNR.parse(input: "20220612-0004", relative: ref).age, 0, "born today")
-        XCTAssertEqual(try SwedishPNR.parse(input: "20720612-0003", relative: ref).age, 0, "born in the future")
+        XCTAssertEqual(try SwedishPNR.parse(input: "20220611-0005", relative: ref).age(at: ref), 0, "born yesterday")
+        XCTAssertEqual(try SwedishPNR.parse(input: "20220612-0004", relative: ref).age(at: ref), 0, "born today")
+        XCTAssertEqual(try SwedishPNR.parse(input: "20720612-0003", relative: ref).age(at: ref), 0, "born in the future")
     }
 
     func testAgeAt() throws {
@@ -351,12 +351,12 @@ final class SwedishPNRTests: XCTestCase {
     func testMenOfOldAndDwarvesAndElves() throws {
         var ref = formatterForSweden!.date(from: "2022-01-01")!
 
-        XCTAssertEqual(try SwedishPNR.parse(input: "19000101-0008", relative: ref).age, 122)
-        XCTAssertEqual(try SwedishPNR.parse(input: "18000101-0008", relative: ref).age, 222)
-        XCTAssertEqual(try SwedishPNR.parse(input: "10660101-0009", relative: ref).age, 956)
+        XCTAssertEqual(try SwedishPNR.parse(input: "19000101-0008", relative: ref).age(at: ref), 122)
+        XCTAssertEqual(try SwedishPNR.parse(input: "18000101-0008", relative: ref).age(at: ref), 222)
+        XCTAssertEqual(try SwedishPNR.parse(input: "10660101-0009", relative: ref).age(at: ref), 956)
 
         ref = formatterForSweden!.date(from: "2122-01-01")!
-        XCTAssertEqual(try SwedishPNR.parse(input: "10000101-0008", relative: ref).age, 1122)
+        XCTAssertEqual(try SwedishPNR.parse(input: "10000101-0008", relative: ref).age(at: ref), 1122)
     }
 
     func testDefaultRefTime() throws {
@@ -366,9 +366,9 @@ final class SwedishPNRTests: XCTestCase {
         let rightNow = Date()
         let diff = makeSwedishCalendar().dateComponents([.year], from: bday, to: rightNow).year!
         
-        XCTAssert(pnr.age >= 22)
-        XCTAssert(pnr.age >= diff)
-        XCTAssert(pnr.age <= diff + 5)
+        XCTAssert(pnr.age(at: rightNow) >= 22)
+        XCTAssert(pnr.age(at: rightNow) >= diff)
+        XCTAssert(pnr.age(at: rightNow) <= diff + 5)
     }
 
     func makeFormatterForSwedishDatesWithFormat(format: String) -> DateFormatter {

@@ -5,7 +5,6 @@ public struct SwedishPNR {
     public let normalized: String
     public let birthDateComponents: DateComponents
     public let birthDate: Date
-    public let age: Int
 
     public func age(at reference: Date = Date()) -> Int {
         return calculateAge(for: birthDate, at: reference, in: makeSwedishCalendar())
@@ -69,8 +68,7 @@ public struct Parser {
             input: String(input),
             normalized: normalized,
             birthDateComponents: birthDateComponents,
-            birthDate: bday,
-            age: calculateAge(for: bday, at: reference, in: swedishCalendar))
+            birthDate: bday)
     }
 
     private func deduceCenturyFromBirthDate(_ birthDate: DateComponents, _ reference: Date, _ isCentennial: Bool) throws -> DateComponents {
