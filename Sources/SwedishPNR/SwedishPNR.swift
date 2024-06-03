@@ -13,7 +13,7 @@ public struct SwedishPNR {
 
 
 public struct Parser {
-    enum ParseError: Error {
+    public enum ParseError: Error {
         case length(Int)
         case checksum(Int, Int)
         case format
