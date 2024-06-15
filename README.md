@@ -78,6 +78,6 @@ A successful parse returns a `SwedishPNR`. This type has a few properties:
 * `birthDateComponents` is a `DateComponents` instance holding `year`, `month` and `day`,
 * `birthDate` is a `Date` instance representing the first instant of the birth date _in the Sweden time zone_.
 
-The `SwedishPNR` also has a method `age(at:) -> Int` that calculates the age relative a reference date (which defaults to now).
+The `SwedishPNR` also has a method `age(at:) -> Int` that calculates the age in years relative a reference date (which defaults to now).
 
 Note that all date calculations (age and deducing century) are performed in the Sweden time zone.
