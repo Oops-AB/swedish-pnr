@@ -10,12 +10,12 @@ final class SwedishPNRTests: XCTestCase {
     var formatterForSweden: DateFormatter?
     var now: Date?
 
-    override func setUp() async throws {
+    override func setUp() {
         formatterForSweden = makeFormatterForSwedishDatesWithFormat(format: "yyyy-MM-dd")
         now = formatterForSweden!.date(from: "2017-12-12")!
     }
 
-    override func tearDown() async throws {
+    override func tearDown() {
         formatterForSweden = nil
     }
 
