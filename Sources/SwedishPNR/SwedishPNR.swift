@@ -44,6 +44,8 @@ public struct Parser {
         var (birthDateComponents, birthNumber) = try extractBirthDateAndNumber(from: trimmed)
         try validateChecksum(trimmed)
 
+        let isCoordinationNumber = birthDateComponents.day! > 60
+
         if (trimmed.count > 11) {
             birthDateComponents = try validDateFromFullBirthDate(birthDateComponents)
         } else {
@@ -57,7 +59,11 @@ public struct Parser {
         case 10,
              11,
              12:
-            normalized = String(format: "%04d%02d%02d-%04d", birthDateComponents.year!, birthDateComponents.month!, birthDateComponents.day!, birthNumber)
+            var day = birthDateComponents.day!
+            if isCoordinationNumber {
+                day += 60
+            }
+            normalized = String(format: "%04d%02d%02d-%04d", birthDateComponents.year!, birthDateComponents.month!, day, birthNumber)
         default:
             normalized = trimmed
         }
