@@ -225,8 +225,19 @@ final class SwedishPNRTests: XCTestCase {
 
     func testThrowsWhenDeducedDateInLastCenturyDoesNotExit() throws {
         // 2000-02-29 does exist while 1900-02-29 does not.
-        // So, if it's 2000-02-01 and we want to deduce the birth year from "000229" our first candidate will be '20000229' which does exist, but because it's in the future we'll look in the past century instead. We form '1900-02-29' and conclude that the candidate date doesn't exist (because 1900 is not a leap year).
-        let ref = formatterForSweden!.date(from: "2000-02-01")!
+        // So, if it's 2000-02-01 and we want to deduce the birth year from "000229"
+        // our first candidate will be '20000229' which does exist, but because it's
+        // in the future we'll look in the past century instead. We form '1900-02-29'
+        // and conclude that the candidate date doesn't exist (because 1900 is not a
+        // leap year).
+
+        // First verify the assumption that 2000-02-29 exists.
+        var ref = formatterForSweden!.date(from: "2000-03-01")!
+        let pnr = try SwedishPNR.parse(input: "000229-0005", relative: ref)
+        XCTAssertEqual(pnr.normalized, "20000229-0005")
+
+        // Now test the deduction.
+        ref = formatterForSweden!.date(from: "2000-02-01")!
 
         do {
             _ = try SwedishPNR.parse(input: "000229-0005", relative: ref)
@@ -251,9 +262,9 @@ final class SwedishPNRTests: XCTestCase {
 
     func testThrowsWhenDeducedDateInThisCenturyDoesNotExist() throws {
         // 2400-02-29 does exist while 2500-02-29 does not.
-        // If it's 2500-02-28 and we want to deduce '000229', then the candidate '2500-02-29' doesn't exist
+        // If it's 2500-02-01 and we want to deduce '000229', then the candidate '2500-02-29' doesn't exist
         // (and if it would have existed it had been in the future),
-        // so the next candidate '2400-02-29' is and it does exist, and it is less than 100 years in the past.
+        // so the next candidate is '2400-02-29' and it does exist, and it is less than 100 years in the past.
         let ref = formatterForSweden!.date(from: "2500-02-01")!
 
         let pnr = try SwedishPNR.parse(input: "000229-0005", relative: ref)
@@ -302,7 +313,7 @@ final class SwedishPNRTests: XCTestCase {
     }
 
     func testCenturyCalculatedInSwedishCalendar() throws {
-        // Sweden is UTC+0100 in winter. First verify our 
+        // Sweden is UTC+0100 in winter. First verify our assumptions.
         let formatterForUTC = makeFormatterForUTCDatesWithFormat(format: "yyyy-MM-dd HH:mm")
         let formatterForSWE = makeFormatterForSwedishDatesWithFormat(format: "yyyy-MM-dd HH:mm")
 
@@ -312,6 +323,7 @@ final class SwedishPNRTests: XCTestCase {
         XCTAssertEqual(formatterForSweden!.string(from: endOfLastMilleniumInUTC), "2000-01-01")
         XCTAssertEqual(formatterForSweden!.string(from: endOfLastMilleniumInSWE), "1999-12-31")
 
+        // Now verify the Swedishness of our calculations.
         var pnr = try SwedishPNR.parse(input: "000101-0008", relative: endOfLastMilleniumInUTC)
         XCTAssertEqual(pnr.normalized, "20000101-0008")
 
