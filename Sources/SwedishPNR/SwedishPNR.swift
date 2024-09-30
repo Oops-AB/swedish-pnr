@@ -5,9 +5,15 @@ public struct SwedishPNR {
     public let normalized: String
     public let birthDateComponents: DateComponents
     public let birthDate: Date
+    public let gender: Gender
 
     public func age(at reference: Date = Date()) -> Int {
         return calculateAge(for: birthDate, at: reference, in: makeSwedishCalendar())
+    }
+
+    public enum Gender {
+        case female
+        case male
     }
 }
 
@@ -70,11 +76,15 @@ public struct Parser {
 
         let bday = swedishCalendar.date(from: birthDateComponents)!
 
+        let penultimateDigitIdx = normalized.index(normalized.startIndex, offsetBy: 11)
+        let penultimateDigit = Int(normalized[penultimateDigitIdx..<normalized.index(after: penultimateDigitIdx)], radix: 10)!
+
         return SwedishPNR(
             input: String(input),
             normalized: normalized,
             birthDateComponents: birthDateComponents,
-            birthDate: bday)
+            birthDate: bday,
+            gender: penultimateDigit.isMultiple(of: 2) ? .female : .male)
     }
 
     private func deduceCenturyFromBirthDate(_ birthDate: DateComponents, _ reference: Date, _ isCentennial: Bool) throws -> DateComponents {

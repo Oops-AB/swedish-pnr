@@ -17,6 +17,12 @@ The Swedish Tax Agency ("Skatteverket" in Swedish) has a [description of the for
 
 * When a person reaches the honorable age of 100 years, a plus sign (`+`) is used for the separator in their PNR, i.e., `yyMMdd+nnnc`.
 
+* The last digit of the birth number
+  (i.e, the penultimate digit, you know, the one followed by the checksum)
+  reveals the gender of the person.
+  Even and odd numbers
+  denote females and males, respectively.
+
 * Although the standard form of a PNR is the eleven character version described so far, other forms are also in common use. This library handles PNRs on the following forms. Note that the last two forms include the century, so no deduction is necessary, neither is the plus separator allowed; unsurprisingly these forms are popular, if not required in many apps and sites today.
 
     * 10 characters: `yyMMddnnnc` (standard form but lacking separator)

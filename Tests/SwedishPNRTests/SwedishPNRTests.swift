@@ -371,6 +371,22 @@ final class SwedishPNRTests: XCTestCase {
         XCTAssertEqual(try SwedishPNR.parse(input: "10000101-0008", relative: ref).age(at: ref), 1122)
     }
 
+    func testGender() throws {
+        let ref = formatterForSweden!.date(from: "2024-09-30")!
+
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1008", relative: ref).gender, .female)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1024", relative: ref).gender, .female)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1040", relative: ref).gender, .female)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1065", relative: ref).gender, .female)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1081", relative: ref).gender, .female)
+
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1016", relative: ref).gender, .male)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1032", relative: ref).gender, .male)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1057", relative: ref).gender, .male)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1073", relative: ref).gender, .male)
+        XCTAssertEqual(try SwedishPNR.parse(input: "240101-1099", relative: ref).gender, .male)
+    }
+
     func testDefaultRefTime() throws {
         let pnr = try SwedishPNR.parse(input: "20000101-0008")
         
