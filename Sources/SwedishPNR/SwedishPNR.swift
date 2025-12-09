@@ -88,12 +88,12 @@ public struct Parser {
     }
 
     private func deduceCenturyFromBirthDate(_ birthDate: DateComponents, _ reference: Date, _ isCentennial: Bool) throws -> DateComponents {
-        var presentTime = reference
-        var century = swedishCalendar.component(.year, from: presentTime) / 100
+        let presentTime = reference
+        let presentDate = swedishCalendar.dateComponents([.year, .month, .day], from: presentTime)
+        var century = presentDate.year! / 100
 
         if isCentennial {
             century -= 1
-            presentTime = swedishCalendar.date(byAdding: .year, value: -100, to: presentTime)!
         }
 
         var candidate = DateComponents(
@@ -102,7 +102,9 @@ public struct Parser {
             day: birthDate.day! > 60 ? birthDate.day! - 60 : birthDate.day
         )
 
-        if (!candidate.isValidDate(in: swedishCalendar) || swedishCalendar.compare(swedishCalendar.date(from: candidate)!, to: presentTime, toGranularity: isCentennial ? .year : .day) == .orderedDescending) {
+        if (!candidate.isValidDate(in: swedishCalendar)
+            || swedishCalendar.compare(swedishCalendar.date(from: candidate)!, to: presentTime, toGranularity: .day) == .orderedDescending
+            || (isCentennial && swedishCalendar.dateComponents([.year], from: candidate, to: presentDate).year! < 100)) {
             century -= 1
             candidate.year = 100*century + birthDate.year!
             
