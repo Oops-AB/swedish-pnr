@@ -57,7 +57,7 @@ final class SwedishPNRTests: XCTestCase {
 
             test(name: "deduce cent 100+",   input:   "171210+0005", normalized: "19171210-0005", birthDateComponents: self.components(1917, 12, 10)),
             test(name: "deduce cent 100+",   input:   "160601+0005", normalized: "19160601-0005", birthDateComponents: self.components(1916,  6,  1)),
-            test(name: "deduce cent 100+",   input:   "171218+0007", normalized: "19171218-0007", birthDateComponents: self.components(1917, 12, 18)),
+            test(name: "deduce cent 100+",   input:   "171218+0007", normalized: "18171218-0007", birthDateComponents: self.components(1817, 12, 18)),
             test(name: "deduce cent 100+",   input:   "180601+0003", normalized: "18180601-0003", birthDateComponents: self.components(1818,  6,  1)),
         ]
         
